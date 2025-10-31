@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marga's Surprise</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--text:#e6eef8}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,#071029 0%, #0b1120 100%);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .wrap{width:100%;max-width:880px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:26px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2dd4bf);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{margin:0;font-size:20px}
+    p.lead{color:rgba(230,238,248,0.85);margin-top:8px}
+
+    .stage{margin-top:20px}
+    .center{display:flex;align-items:center;justify-content:center}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:white;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .hidden{display:none}
+
+    .challenge{padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));margin-top:12px}
+    .question{font-size:18px;margin:0 0 12px}
+    .options{display:flex;flex-wrap:wrap;gap:8px}
+    .option{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .option.correct{border:2px solid #10b981}
+    .option.wrong{border:2px solid #ef4444}
+
+    .progress{height:8px;background:rgba(255,255,255,0.04);border-radius:999px;margin-top:14px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#2dd4bf)}
+
+    .final{padding:26px;text-align:center}
+    .final h2{margin-top:6px}
+    .surprise-img{max-width:320px;border-radius:12px;margin-top:14px;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+
+    footer{margin-top:16px;text-align:center;color:rgba(230,238,248,0.6);font-size:13px}
+
+    /* small animations */
+    .sparkles{position:absolute;pointer-events:none; inset:0}
+    @keyframes pop {0%{transform:scale(.92);opacity:0}50%{transform:scale(1.02);opacity:1}100%{transform:scale(1);opacity:1}}
+    .pop{animation:pop .48s cubic-bezier(.2,.9,.18,1)}
+
+    /* responsive */
+    @media (max-width:600px){.card{padding:18px}.logo{width:52px;height:52px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <header>
+        <div class="logo">M</div>
+        <div>
+          <h1 id="site-title">Marga's Little Adventure</h1>
+          <p class="lead">A tiny trail of playful challenges — only for <strong id="marga-name">Marga</strong>.</p>
+        </div>
+      </header>
+
+      <div class="stage" id="stage-intro">
+        <div class="center">
+          <div style="max-width:640px">
+            <h2>Hello, friend 👋</h2>
+            <p>I've made this little surprise for <strong id="marga-name-2">Marga</strong>. Ready for three small challenges? Finish them to see what's waiting at the end.</p>
+            <div class="center" style="margin-top:18px">
+              <button class="btn" id="start-btn">Start the adventure</button>
+            </div>
+          </div>
+        </div>SS
+      </div>
+
+      <div id="stage-challenge" class="hidden">
+        <div class="challenge pop">
+          <p class="question" id="question-text">Question goes here</p>
+          <div class="options" id="options-wrap"></div>
+          <div class="progress" aria-hidden="true" style="margin-top:16px"><i id="progress-fill" style="width:0%"></i></div>
+          <div style="margin-top:12px" class="center"><button class="btn ghost" id="skip-btn">Skip</button></div>
+        </div>
+      </div>
+
+      <div id="stage-final" class="hidden">
+        <div class="final">
+          <div id="confetti-container"></div>
+          <h2 id="final-title">Surprise!</h2>
+          <p id="final-message">Final message appears here.</p>
+          <img id="final-image" class="surprise-img" src="" alt="surprise image" />
+          <div style="margin-top:16px" class="center"><button class="btn" id="replay-btn">Play again</button></div>
+        </div>
+      </div>
+
+      <footer>Made with ❤️ — edit the code to personalize the surprise.</footer>
+    </div>
+  </div>
+
+  <script>
+    // CUSTOMIZE: SITE_TITLE
+    const SITE_TITLE = "Marga's Little Adventure";
+    // CUSTOMIZE: MARGA_NAME
+    const MARGA_NAME = "Marga";
+
+    // CUSTOMIZE: FINAL_MESSAGE and FINAL_IMAGE_URL
+    const FINAL_MESSAGE = `Hey ${MARGA_NAME}! Surprise — you completed the mini-adventure. You're amazing and I hope this made you smile. 💖`;
+    const FINAL_IMAGE_URL = "https://images.unsplash.com/photo-1511974035430-5de47d3b95da?auto=format&fit=crop&w=800&q=60"; // replace with your own image URL or local path
+
+    document.getElementById('site-title').textContent = SITE_TITLE;
+    document.getElementById('marga-name').textContent = MARGA_NAME;
+    document.getElementById('marga-name-2').textContent = MARGA_NAME;
+
+    // CHALLENGES: edit these to change the questions and answers.
+    // Each challenge: {type: 'multiple'|'riddle'|'drag', question: '', options: [], answerIndex: 0}
+    // CUSTOMIZE: CHALLENGES
+    const challenges = [
+      {type:'multiple', question:'Which of these is your favorite color?', options:['Sunset orange','Midnight blue','Forest green','Bubblegum pink'], answerIndex:1},
+      {type:'riddle', question:'I speak without a mouth and hear without ears. I have nobody, but I come alive with wind. What am I?', options:['Echo','Shadow','Cloud','Whistle'], answerIndex:0},
+      {type:'multiple', question:'Guess how many times I thought about you today (pick a number)?', options:['1','3','7','Too many to count ❤️'], answerIndex:3}
+    ];
+
+    // Internal state
+    let idx = 0;
+    const total = challenges.length;
+
+    const startBtn = document.getElementById('start-btn');
+    const stageIntro = document.getElementById('stage-intro');
+    const stageChallenge = document.getElementById('stage-challenge');
+    const stageFinal = document.getElementById('stage-final');
+    const questionText = document.getElementById('question-text');
+    const optionsWrap = document.getElementById('options-wrap');
+    const progressFill = document.getElementById('progress-fill');
+    const skipBtn = document.getElementById('skip-btn');
+    const finalMessageEl = document.getElementById('final-message');
+    const finalImageEl = document.getElementById('final-image');
+    const finalTitle = document.getElementById('final-title');
+    const replayBtn = document.getElementById('replay-btn');
+
+    startBtn.addEventListener('click', () => {
+      stageIntro.classList.add('hidden');
+      stageChallenge.classList.remove('hidden');
+      idx = 0;
+      showChallenge(idx);
+    });
+
+    skipBtn.addEventListener('click', ()=>{
+      markComplete(false);
+    });
+
+    replayBtn.addEventListener('click', ()=>{
+      stageFinal.classList.add('hidden');
+      stageIntro.classList.remove('hidden');
+    });
+
+    function showChallenge(i){
+      const c = challenges[i];
+      questionText.textContent = c.question;
+      optionsWrap.innerHTML = '';
+
+      c.options.forEach((opt, j)=>{
+        const el = document.createElement('button');
+        el.className = 'option';
+        el.textContent = opt;
+        el.addEventListener('click', ()=>handleAnswer(j));
+        optionsWrap.appendChild(el);
+      });
+
+      updateProgress();
+    }
+
+    function handleAnswer(choiceIndex){
+      const c = challenges[idx];
+      const options = Array.from(optionsWrap.children);
+      options.forEach((o, i)=>{ o.classList.remove('correct','wrong'); o.disabled = true; });
+      if(choiceIndex === c.answerIndex){
+        options[choiceIndex].classList.add('correct');
+      } else {
+        options[choiceIndex].classList.add('wrong');
+        // highlight correct
+        options[c.answerIndex].classList.add('correct');
+      }
+      setTimeout(()=>markComplete(choiceIndex === c.answerIndex), 900);
+    }
+
+    function markComplete(correct){
+      // simple feedback (could be expanded)
+      idx++;
+      if(idx >= total){
+        finish();
+      } else {
+        showChallenge(idx);
+      }
+    }
+
+    function updateProgress(){
+      const percent = Math.round((idx/total) * 100);
+      progressFill.style.width = percent + '%';
+    }
+
+    function finish(){
+      stageChallenge.classList.add('hidden');
+      stageFinal.classList.remove('hidden');
+      finalMessageEl.textContent = FINAL_MESSAGE;
+      finalImageEl.src = FINAL_IMAGE_URL;
+      finalTitle.textContent = `You did it, ${MARGA_NAME}!`;
+      launchConfetti();
+    }
+
+    // tiny confetti (no libs)
+    function launchConfetti(){
+      // create colorful circles
+      const container = document.getElementById('confetti-container');
+      container.innerHTML = '';
+      for(let i=0;i<36;i++){
+        const d = document.createElement('div');
+        d.style.position='absolute';
+        d.style.left=Math.random()*100+'%';
+        d.style.top=Math.random()*50+'%';
+        d.style.width=(6+Math.random()*10)+'px';
+        d.style.height=(6+Math.random()*10)+'px';
+        d.style.borderRadius='2px';
+        d.style.background=['#7c3aed','#06b6d4','#10b981','#f97316','#f43f5e'][Math.floor(Math.random()*5)];
+        d.style.opacity='0';
+        d.style.transform='translateY(0)';
+        d.style.transition='all 1.6s cubic-bezier(.2,.9,.18,1)';
+        container.appendChild(d);
+        setTimeout(()=>{
+          d.style.opacity='1';
+          d.style.transform=`translateY(${200+Math.random()*200}px) rotate(${Math.random()*360}deg)`;
+          d.style.left = `calc(${Math.random()*100}% )`;
+        }, 20+i*18);
+        setTimeout(()=>{ d.remove(); }, 2200+i*20);
+      }
+    }
+
+    // Accessibility: let Enter key start
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && !stageChallenge.classList.contains('hidden')){
+        // do nothing (prevents accidental skipping)
+      }
+    });
+
+  </script>
+</body>
+</html>
